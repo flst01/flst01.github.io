@@ -87,31 +87,9 @@ exclude:
   - README.md
   - CNAME
   - mybookname/
-  - mandelbrot-emscripten-explorer/
   - convert_jupyterbooks.py
-  - convert_mandelbrot.py
-#include:
-## Jekyll ignoriert immer Ordner mit _
-#  - mybookname_html/_static/        # assets (CSS-JS-fonts)
-#  - mybookname_html/images/        # if Jupyter Book wrote images here
-#  - mybookname_html/_sources/
-#  - mybookname_html/_sphinx_design_static/
-#  - VisDepot_html/images/
-#  - VisDepot_html/_panels_static/
-#  - VisDepot_html/_sources/
-#  - VisDepot_html/_sphinx_design_static/
-#  - VisDepot_html/_static/
 
-# Nur auf GITHUB PAGES: .nojekyll file --> html Dateien werden normal gehostet.
-# Bester Weg, um einfach auf Github Pages die Bücher zu haben.
-# Pfad: {base-dir}/mybookname/abc.html
-# Pfad: {base-dir}/VisDepot/abc.html
-
-# Serving wie Github
-# bundle exec jekyll serve --incremental --livereload
-# --> .nojekyll file funktioniert nicht lokal
-
-# Best Practice
+# Best Practice für Jupyter Books
 # --> Einfach das Jupyter Book exportieren
 # --> Danach mit convert_jupyterbooks.py alle Referenzen auf Ordner mit _... umbenennen.
 

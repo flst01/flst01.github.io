@@ -3,7 +3,7 @@ import shutil
 
 source_dir = "mybookname/_build/html"
 target_dir = "mybookname_html_autoconvert"
-base_url = "http://127.0.0.1:4000/"
+base_url = "https://flst01.github.io/"
 
 # 1. Copy the built book to a clean target folder
 if os.path.exists(target_dir):
