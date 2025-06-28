@@ -1,0 +1,9 @@
+[submodule "{subfolder_name}"]
+	path = {subfolder_name}
+	url = https://github.com/flst01/mandelbrot-emscripten-explorer.git
+[submodule "mybookname"]
+	path = mybookname
+	url = https://github.com/alejandroschuler/mybookname.git
+[submodule "mandelbrot-emscripten-explorer"]
+	path = mandelbrot-emscripten-explorer
+	url = https://github.com/flst01/mandelbrot-emscripten-explorer.git
