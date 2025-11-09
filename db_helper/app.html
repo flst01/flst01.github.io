@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>KA Hbf ⇄ KA-Durlach Monitor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+    --bg: #050608;          /* Seitenhintergrund (fast schwarz) */
+    --card-bg: #14161b;     /* Kartenhintergrund (dunkles Grau) */
+    --accent: #e74c3c;      /* Akzentrot (Buttons/Badges) */
+    --text: #f5f5f5;        /* Primärtext (fast weiß) */
+    --muted: #9ca3af;       /* Sekundärtext (gedämpftes Grau) */
+    --border: #374151;      /* Linien & Tabellenränder */
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .shell {
+      max-width: 1200px;
+      width: 100%;
+    }
+    .title {
+      margin-bottom: 1rem;
+      font-weight: 600;
+      font-size: 1.15rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      color: var(--text);
+    }
+    .subtitle {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 400;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+    @media (max-width: 800px) {
+      .grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+    .card {
+    background: var(--card-bg);
+    border-radius: 1rem;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.7);
+    width: 100%;
+    padding: 2rem 1.5rem;   /* vorher 1.25rem 1.5rem */
+    overflow: hidden;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.8rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .route {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    .badge {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      border: 1px solid rgba(179,0,0,0.2);
+      border-radius: 999px;
+      padding: 0.1rem 0.6rem;
+      white-space: nowrap;
+    }
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+      width: 100%;
+      border-collapse: separate;   /* statt collapse */
+      border-spacing: 0 0;         /* nötig, um Spaltenabstände zu erlauben */
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+    }
+    thead {
+      border-bottom: 1px solid var(--border);
+    }
+    th, td {
+      padding: 0.3rem 0.6rem;
+      text-align: left;
+    }
+    th {
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    th {
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    tbody tr + tr {
+      border-top: 1px solid var(--border);
+    }
+    .line {
+      font-weight: 500;
+    }
+    .platform, .delay {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .delay.positive {
+      color: #c0392b;
+      font-weight: 500;
+    }
+    .delay.negative {
+      color: #27ae60;
+    }
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.6rem;
+      font-size: 0.76rem;
+      color: var(--muted);
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #28a745;
+      margin-right: 0.35rem;
+      display: inline-block;
+    }
+    .error {
+      color: #c0392b;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="title">
+      <span>Karlsruhe Hbf ⇄ Karlsruhe-Durlach – Live Monitor</span>
+      <span class="subtitle">Abfrage alle 60 Sekunden – Zeiten in lokaler Zeitzone</span>
+    </div>
+    <div class="grid">
+      <!-- Karte: Hbf → Durlach -->
+      <main class="card">
+        <header class="header">
+          <div class="route">Karlsruhe Hbf → Karlsruhe-Durlach</div>
+          <div class="badge">5 Verbindungen</div>
+        </header>
+
+        <div class="meta">
+          <div id="last-update-h2d">Zuletzt aktualisiert: –</div>
+          <div>Aufbruch Ziel = Zugzeit - 15&nbsp;min</div>
+          <div>Ankunft Ziel = Zugzeit + 15&nbsp;min</div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Abfahrt</th>
+              <th>Ankunft</th>
+              <th>Linie</th>
+              <th>Gleis</th>
+              <th>+Δt</th>
+              <th>Aufbruch</th>
+              <th>Ankunft Ziel</th>
+            </tr>
+          </thead>
+          <tbody id="rows-h2d">
+            <tr><td colspan="7">Lade Verbindungen …</td></tr>
+          </tbody>
+        </table>
+
+        <div class="status-bar">
+          <div><span class="dot"></span><span>Quelle: v6.db.transport.rest</span></div>
+          <div id="error-h2d" class="error"></div>
+        </div>
+      </main>
+
+      <!-- Karte: Durlach → Hbf -->
+      <main class="card">
+        <header class="header">
+          <div class="route">Karlsruhe-Durlach → Karlsruhe Hbf</div>
+          <div class="badge">5 Verbindungen</div>
+        </header>
+
+        <div class="meta">
+          <div id="last-update-d2h">Zuletzt aktualisiert: –</div>
+          <div>Aufbruch Ziel = Zugzeit - 15&nbsp;min</div>
+          <div>Ankunft Ziel = Zugzeit + 15&nbsp;min</div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Abfahrt</th>
+              <th>Ankunft</th>
+              <th>Linie</th>
+              <th>Gleis</th>
+              <th>+Δt</th>
+              <th>Aufbruch</th>
+              <th>Ankunft Ziel</th>
+            </tr>
+          </thead>
+          <tbody id="rows-d2h">
+            <tr><td colspan="7">Lade Verbindungen …</td></tr>
+          </tbody>
+        </table>
+
+        <div class="status-bar">
+          <div><span class="dot"></span><span>Quelle: v6.db.transport.rest</span></div>
+          <div id="error-d2h" class="error"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // Station-IDs (EVA/IBNR)
+    const KA_HBF_ID   = '8000191';
+    const KA_DURLACH_ID = '8003184';
+
+    const API_BASE = 'https://v6.db.transport.rest';
+
+    const ROUTES = [
+      {
+        from: KA_HBF_ID,
+        to: KA_DURLACH_ID,
+        rowsId: 'rows-h2d',
+        lastUpdateId: 'last-update-h2d',
+        errorId: 'error-h2d'
+      },
+      {
+        from: KA_DURLACH_ID,
+        to: KA_HBF_ID,
+        rowsId: 'rows-d2h',
+        lastUpdateId: 'last-update-d2h',
+        errorId: 'error-d2h'
+      }
+    ];
+
+    function formatTime(isoString) {
+      if (!isoString) return '–';
+      const d = new Date(isoString);
+      return d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function addMinutes(isoString, minutes) {
+      if (!isoString) return '–';
+      const d = new Date(isoString);
+      d.setMinutes(d.getMinutes() + minutes);
+      return d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function substractMinutes(isoString, minutes) {
+      if (!isoString) return '–';
+      const d = new Date(isoString);
+      d.setMinutes(d.getMinutes() - minutes);
+      return d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function formatDelay(planned, prognosed) {
+      if (!planned || !prognosed) return '';
+      const p = new Date(planned);
+      const r = new Date(prognosed);
+      const diffMin = Math.round((r - p) / 60000);
+      if (!diffMin) return '';
+      const cls = diffMin > 0 ? 'positive' : 'negative';
+      const sign = diffMin > 0 ? '+' : '';
+      return `<span class="delay ${cls}">${sign}${diffMin}′</span>`;
+    }
+
+    async function fetchJourneysForRoute(route) {
+      const rowsEl = document.getElementById(route.rowsId);
+      const errorEl = document.getElementById(route.errorId);
+      const lastUpdateEl = document.getElementById(route.lastUpdateId);
+      errorEl.textContent = '';
+
+      try {
+        const params = new URLSearchParams({
+          from: route.from,
+          to: route.to,
+          results: '5',
+          stopovers: 'false',
+          remarks: 'false',
+          pretty: 'false'
+        });
+
+        const res = await fetch(`${API_BASE}/journeys?${params.toString()}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const journeys = data.journeys || [];
+
+        if (!journeys.length) {
+          rowsEl.innerHTML = '<tr><td colspan="7">Keine Verbindungen gefunden.</td></tr>';
+          return;
+        }
+
+        const newRows = journeys.map((j) => {
+          const firstLeg = j.legs && j.legs[0];
+          const lastLeg = j.legs && j.legs[j.legs.length - 1];
+
+          const depPlanned   = firstLeg && (firstLeg.plannedDeparture || firstLeg.departure);
+          const depPrognosed = firstLeg && firstLeg.departure;
+          const arrPlanned   = lastLeg && (lastLeg.plannedArrival || lastLeg.arrival);
+          const arrPrognosed = lastLeg && lastLeg.arrival;
+
+          const depBase = depPrognosed || depPlanned;
+          const arrBase = arrPrognosed || arrPlanned;
+
+          const lineName = firstLeg && firstLeg.line &&
+                           (firstLeg.line.name || firstLeg.line.productName) || '–';
+          const depPlatform =
+            firstLeg && (firstLeg.plannedDeparturePlatform || firstLeg.departurePlatform) || '';
+
+          const depDelay = formatDelay(depPlanned, depPrognosed);
+          const arrDelay = formatDelay(arrPlanned, arrPrognosed);
+
+          const aufbruchTime = substractMinutes(depBase, 15);
+          const ankunftZielTime = addMinutes(arrBase, 15);
+
+          return `
+            <tr>
+              <td>
+                ${formatTime(depBase)}
+                ${depDelay ? `<div class="delay">${depDelay}</div>` : ''}
+              </td>
+              <td>
+                ${formatTime(arrBase)}
+                ${arrDelay ? `<div class="delay">${arrDelay}</div>` : ''}
+              </td>
+              <td>
+                <div class="line">${lineName}</div>
+                <div class="platform">${firstLeg && firstLeg.direction ? firstLeg.direction : ''}</div>
+              </td>
+              <td>${depPlatform}</td>
+              <td>${depDelay || ''}</td>
+              <td>${aufbruchTime}</td>
+              <td>${ankunftZielTime}</td>
+            </tr>
+          `;
+        }).join('');
+
+        rowsEl.innerHTML = newRows;
+
+        const now = new Date();
+        lastUpdateEl.textContent =
+          'Zuletzt aktualisiert: ' + now.toLocaleTimeString('de-DE', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+          });
+      } catch (err) {
+        console.error(err);
+        errorEl.textContent = 'Fehler beim Laden der Daten';
+      }
+    }
+
+    async function refreshAll() {
+      for (const route of ROUTES) {
+        fetchJourneysForRoute(route);
+      }
+    }
+
+    // Erste Abfrage direkt …
+    refreshAll();
+    // … und dann alle 60 Sekunden
+    setInterval(refreshAll, 60_000);
+  </script>
+</body>
+</html>

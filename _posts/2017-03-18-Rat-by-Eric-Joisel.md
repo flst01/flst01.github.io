@@ -1,5 +1,5 @@
 ---
-layout: origami
+layout: post
 title: Rat by Eric Joisel
 ---
 
