@@ -188,13 +188,13 @@
         <table>
           <thead>
             <tr>
-              <th>Abfahrt</th>
-              <th>Ankunft</th>
+              <th>Aufbruch</th>
+              <th>Ankunft Ziel</th>
               <th>Linie</th>
               <th>Gleis</th>
               <th>+Δt</th>
-              <th>Aufbruch</th>
-              <th>Ankunft Ziel</th>
+              <th>Abfahrt</th>
+              <th>Ankunft</th>
             </tr>
           </thead>
           <tbody id="rows-h2d">
@@ -224,13 +224,13 @@
         <table>
           <thead>
             <tr>
-              <th>Abfahrt</th>
-              <th>Ankunft</th>
+              <th>Aufbruch</th>
+              <th>Ankunft Ziel</th>
               <th>Linie</th>
               <th>Gleis</th>
               <th>+Δt</th>
-              <th>Aufbruch</th>
-              <th>Ankunft Ziel</th>
+              <th>Abfahrt</th>
+              <th>Ankunft</th>
             </tr>
           </thead>
           <tbody id="rows-d2h">
@@ -352,6 +352,16 @@
 
           return `
             <tr>
+              <td>${aufbruchTime}</td>
+              <td>${ankunftZielTime}</td>
+              
+              <td>
+                <div class="line">${lineName}</div>
+                <div class="platform">${firstLeg && firstLeg.direction ? firstLeg.direction : ''}</div>
+              </td>
+              <td>${depPlatform}</td>
+              <td>${depDelay || ''}</td>
+              
               <td>
                 ${formatTime(depBase)}
                 ${depDelay ? `<div class="delay">${depDelay}</div>` : ''}
@@ -360,14 +370,6 @@
                 ${formatTime(arrBase)}
                 ${arrDelay ? `<div class="delay">${arrDelay}</div>` : ''}
               </td>
-              <td>
-                <div class="line">${lineName}</div>
-                <div class="platform">${firstLeg && firstLeg.direction ? firstLeg.direction : ''}</div>
-              </td>
-              <td>${depPlatform}</td>
-              <td>${depDelay || ''}</td>
-              <td>${aufbruchTime}</td>
-              <td>${ankunftZielTime}</td>
             </tr>
           `;
         }).join('');
